@@ -22,7 +22,7 @@ http.listen(3000, function () {
 app.post('/identifai', function(req, res) {
 	console.log(req.body.pictureLink);
 	console.log(moment().format());
-	io.emit("New Picture", [req.body.pictureLink, moment().format()]);
+	io.emit("New Picture", [req.body.pictureLink, moment().format(), req.body.message]);
 	res.send("Message received.");
 });
 
