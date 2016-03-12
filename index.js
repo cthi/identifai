@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-
+var moment = require('moment');
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
@@ -21,7 +21,8 @@ http.listen(3000, function () {
 
 app.post('/identifai', function(req, res) {
 	console.log(req.body.pictureLink);
-	io.emit("New Picture", req.body.pictureLink);
+	console.log(moment().format());
+	io.emit("New Picture", [req.body.pictureLink, moment().format()]);
 	res.send("Message received.");
 });
 
