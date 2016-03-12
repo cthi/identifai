@@ -29,9 +29,9 @@ function videoError() {
   
 //setInterval(capture, 5000);
   
-var clarifaiToken = "Q6A5Ef9elxwEX5vhcZOrbM13K4GXlO";
+var clarifaiToken = "nREWwf8rEcaKhO9bnJfRTX6Z5n1ZEO";
 var imgurToken = "1d91987f090d3ea";
-var matchArr = ["adult", "child", "children", "clothing", "eyeglasses", "man", "men", "people", "woman", "women"];
+var matchArr = ["adult", "child", "children", "clothing", "eyeglasses", "man", "men", "people", "woman", "women"].sort();
 
 function dataURItoBlob(dataURI) {
     // convert base64/URLEncoded data component to raw binary data held in a string
