@@ -31,7 +31,7 @@ function videoError() {
   
 var clarifaiToken = "Q6A5Ef9elxwEX5vhcZOrbM13K4GXlO";
 var imgurToken = "1d91987f090d3ea";
-var matchArr = ["adult"];
+var matchArr = ["adult", "child", "children", "clothing", "eyeglasses", "man", "men", "people", "woman", "women"];
 
 function dataURItoBlob(dataURI) {
     // convert base64/URLEncoded data component to raw binary data held in a string
@@ -91,19 +91,29 @@ function sendPicture (dataURI) {
         data: {image:base64Img.substring(base64Img.indexOf(",") + 1)}
         })
         .success(function (data) {
-             console.log(data.data.link);
+          $.ajax({
+            headers: {authorization: "Bearer " + clarifaiToken},
+            url: "http://localhost:3000/identifai",
+            type: "post",
+            data: {pictureLink: data.data.link}
+          })
+          console.log(data.data.link);
         })
-      };
+      }
     })
   });
 }
 
 function hasIntersect(a, b)
 {
-  while( a.length > 0 && b.length > 0 )
+  var aCounter = 0;
+  var bCounter = 0;
+  a.sort();
+  b.sort();
+  while( a.length > aCounter && b.length > bCounter )
   {  
-     if      (a[0] < b[0] ){ a.shift(); }
-     else if (a[0] > b[0] ){ b.shift(); }
+     if      (a[aCounter] < b[bCounter] ){ aCounter += 1; }
+     else if (a[aCounter] > b[bCounter] ){ bCounter += 1; }
      else /* they're equal */
      {
        return true;

@@ -1,5 +1,8 @@
 var express = require('express');
 var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
@@ -12,11 +15,19 @@ app.get('/', function (req, res) {
 app.use('/home', express.static('index.html'));
 app.use(express.static(__dirname + '/'));
 
-app.listen(3000, function () {
+http.listen(3000, function () {
     console.log('Example app listening on port 3000!');
 });
 
 app.post('/identifai', function(req, res) {
-	console.log(req.body.hello);
-	res.send("dick");
+	console.log(req.body.pictureLink);
+	io.emit("New Picture", req.body.pictureLink);
+	res.send("Message received.");
 });
+
+io.on('connection', function(socket){
+  console.log('a user connected');
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+});	
