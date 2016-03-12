@@ -37,6 +37,7 @@ dependencies {
     compile 'org.jetbrains.anko:anko-recyclerview-v7:0.8.3'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.android.support:support-v4:23.1.1'
+    compile 'io.reactivex:rxkotlin:0.22.12'
     compile ('io.socket:socket.io-client:0.7.0') {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'

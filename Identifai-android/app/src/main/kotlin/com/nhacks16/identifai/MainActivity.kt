@@ -14,7 +14,7 @@ import java.util.*
 import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
-    private var recyclerView : RecyclerView by Delegates.notNull<RecyclerView>()
+    private var recyclerView: RecyclerView by Delegates.notNull<RecyclerView>()
     private var service: AlertService by Delegates.notNull<AlertService>()
     private var serviceIsBound = false
     private val connection = object : ServiceConnection {
@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private var adapter: AlertAdapter by Delegates.notNull<AlertAdapter>();
+    val arr = ArrayList<Alert>()
+
     override fun onStart() {
         super.onStart()
 
@@ -39,19 +41,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        recyclerView = recyclerView() {
-        }
-        val arr = ArrayList<Alert>()
-        arr.add(Alert("March 12th 2016, 9:32:43 am", "http://i.imgur.com/QmvfS2v.jpg", "person"));
-        arr.add(Alert("March 12th 2016, 9:32:43 am", "http://i.imgur.com/QmvfS2v.jpg", "person"));
-        arr.add(Alert("March 12th 2016, 9:32:43 am", "http://i.imgur.com/QmvfS2v.jpg", "person"));
-        arr.add(Alert("March 12th 2016, 9:32:43 am", "http://i.imgur.com/QmvfS2v.jpg", "person"));
-        arr.add(Alert("March 12th 2016, 9:32:43 am", "http://i.imgur.com/QmvfS2v.jpg", "person"));
-        arr.add(Alert("March 12th 2016, 9:32:43 am", "http://i.imgur.com/QmvfS2v.jpg", "person"));
-        adapter = AlertAdapter(this, arr)
+        recyclerView = recyclerView()
 
+        adapter = AlertAdapter(this, arr)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
+
+        AlertBus.observable().subscribe { alert ->
+            runOnUiThread {
+                arr.add(0, alert)
+                adapter.notifyDataSetChanged()
+            }
+        }
     }
 
     override fun onDestroy() {
