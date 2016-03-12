@@ -20,16 +20,18 @@ function capture() {
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   var dataUri = canvas.toDataURL('image/jpeg');
-    
+  
   sendPicture(dataUri);
 }
 
 function videoError() {
 }
   
-setInterval(capture, 5000);
+//setInterval(capture, 5000);
   
-var token = "Q6A5Ef9elxwEX5vhcZOrbM13K4GXlO";
+var clarifaiToken = "Q6A5Ef9elxwEX5vhcZOrbM13K4GXlO";
+var imgurToken = "1d91987f090d3ea";
+var matchArr = ["adult"];
 
 function dataURItoBlob(dataURI) {
     // convert base64/URLEncoded data component to raw binary data held in a string
@@ -73,14 +75,40 @@ function sendPicture (dataURI) {
   convertToDataURLviaCanvas(blob_url, function(base64Img){
     // Base64DataURL
     $.ajax({
-      headers: {authorization: "Bearer " + token},
+      headers: {authorization: "Bearer " + clarifaiToken},
       url: "https://api.clarifai.com/v1/tag",
       type: "post",
       data: {encoded_image:base64Img.substring(base64Img.indexOf(",") + 1)}
     })
     .success(function (data) {
-         wordlist = data.results[0].result.tag.classes;
-         console.log(wordlist);
+       wordlist = data.results[0].result.tag.classes;
+       console.log(wordlist);
+       if (hasIntersect(wordlist, matchArr)) {
+        $.ajax({
+        headers: {authorization: "Client-ID " + imgurToken},
+        url: "https://api.imgur.com/3/image",
+        type: "post",
+        data: {image:base64Img.substring(base64Img.indexOf(",") + 1)}
+        })
+        .success(function (data) {
+             console.log(data.data.link);
+        })
+      };
     })
   });
+}
+
+function hasIntersect(a, b)
+{
+  while( a.length > 0 && b.length > 0 )
+  {  
+     if      (a[0] < b[0] ){ a.shift(); }
+     else if (a[0] > b[0] ){ b.shift(); }
+     else /* they're equal */
+     {
+       return true;
+     }
+  }
+
+  return false;
 }
