@@ -31,7 +31,10 @@ function videoError() {
   
 var clarifaiToken = "nREWwf8rEcaKhO9bnJfRTX6Z5n1ZEO";
 var imgurToken = "1d91987f090d3ea";
-var matchArr = ["adult", "child", "children", "clothing", "eyeglasses", "man", "men", "people", "woman", "women"].sort();
+var matchArr = [  {mess: "Person found", wordsToMatch: ["adult", "child", "children", "clothing", "eyeglasses", "man", "men", "people", "woman", "women", "boy", "girl", "youth"]},
+                  {mess: "Dog found", wordsToMatch: ["dog", "canine", "puppy"]},
+                  {mess: "Cat found", wordsToMatch: ["cat", "feline", "kitten"]}];
+_.map(matchArr, function(n) { return n.wordsToMatch.sort(); });
 var curWordlist = null;
 var prevWordlist = null;
 
@@ -84,17 +87,27 @@ function sendPicture (dataURI) {
       data: {encoded_image:base64Img.substring(base64Img.indexOf(",") + 1)}
     })
     .success(function (data) {
+        // figure out whether the picture has changed a lot
         if (prevWordlist == null) {
           prevWordlist = data.results[0].result.tag.classes;
         } else {
           prevWordlist = curWordlist.slice();
         }
        curWordlist = data.results[0].result.tag.classes;
+       var intersectArr = intersect_safe(prevWordlist, curWordlist);
        console.log(prevWordlist);
        console.log(curWordlist);
-       var intersectArr = intersect_safe(curWordlist, prevWordlist);
-       if (hasIntersect(curWordlist, matchArr) || intersectArr.length < 10) {
-        var messageStr = trimChars([hasIntersect(curWordlist, matchArr)? "Person found" : "", intersectArr.length < 10? "Significant change" : ""].join(", "), ", ");
+       var isMatch = false;
+       var messageStr = _.reduce(matchArr, function(acc, val, index, collection) {
+                            if (hasIntersect(curWordlist, val.wordsToMatch)) {
+                              isMatch = true;
+                              return acc + ", " + val.mess;
+                            }
+                            else {return acc};
+                         }, "");
+       if (isMatch || intersectArr.length < 10) {
+        messageStr += intersectArr.length < 10 ? ", Significant change" : "";
+        messageStr = trimChars(messageStr, ", ");
         console.log(messageStr);
         $.ajax({
         headers: {authorization: "Client-ID " + imgurToken},
@@ -139,7 +152,8 @@ function intersect_safe(a, b)
 {
   var ai=0, bi=0;
   var result = new Array();
-
+  a.sort();
+  b.sort();
   while( ai < a.length && bi < b.length )
   {
      if      (a[ai] < b[bi] ){ ai++; }
