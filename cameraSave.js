@@ -27,7 +27,7 @@ function capture() {
 function videoError() {
 }
   
-//setInterval(capture, 5000);
+setInterval(capture, 5000);
   
 var clarifaiToken = "nREWwf8rEcaKhO9bnJfRTX6Z5n1ZEO";
 var imgurToken = "1d91987f090d3ea";
